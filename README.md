@@ -4,7 +4,7 @@ A production-style multi-agent Travel Concierge built using LangGraph, LangChain
 
 This project demonstrates how multiple specialized agents can be orchestrated to answer a single real-world travel query by calling live public APIs instead of relying on model hallucinations.
 
-The application runs locally and is exposed publicly using ngrok, making it suitable for portfolio demos and LinkedIn showcases.
+The application is exposed here: https://travel-concierge-tgsb.onrender.com/
 
 ---
 
