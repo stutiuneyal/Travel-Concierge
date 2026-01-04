@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Travel Concierge – Multi-Agent Router Demo</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1>Travel Concierge</h1>
+        <p class="subtitle">
+          Multi-agent router demo using LangChain tools + free public APIs.
+        </p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Ask a travel question</h2>
+
+        <form id="askForm" class="form">
+          <textarea
+            id="query"
+            class="textarea"
+            rows="4"
+            placeholder="Example: I'm traveling to Japan next week—what time is it there right now, upcoming holidays, INR to JPY rate, and basic facts?"
+          ></textarea>
+
+          <div class="row">
+            <button id="askBtn" class="btn" type="submit">Ask</button>
+            <button id="sampleBtn" class="btn btn-secondary" type="button">
+              Use Sample
+            </button>
+            <span id="status" class="status"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="grid">
+        <section class="card">
+          <h2>Final Answer</h2>
+          <div id="finalAnswer" class="output muted">
+            Submit a query to see the response.
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Agent Outputs</h2>
+          <div id="results" class="stack muted">
+            Agent/tool results will appear here.
+          </div>
+        </section>
+      </section>
+
+      <section class="card">
+        <h2>How it works</h2>
+        <div class="muted">
+          <ol class="list">
+            <li>Router classifies what is needed from your query.</li>
+            <li>Specialized agents run tools (time, holidays, FX, country facts).</li>
+            <li>The workflow aggregates results into a single answer.</li>
+          </ol>
+        </div>
+
+        <h3 class="mt">Architecture</h3>
+        <pre class="codeblock" id="diagram">
+flowchart TD
+  A[User Query] --> B[Router]
+  B --> C1[Time Agent]
+  B --> C2[Holidays Agent]
+  B --> C3[FX Agent]
+  B --> C4[Country Facts Agent]
+
+  C1 --> T1[country_lookup]
+  T1 --> T2[local_time_from_latlon]
+  T2 --> R1[Time Result]
+
+  C2 --> H1[country_lookup]
+  H1 --> H2[upcoming_public_holidays]
+  H2 --> R2[Holiday Result]
+
+  C3 --> F1[fx_rate]
+  F1 --> R3[FX Result]
+
+  C4 --> K1[country_lookup]
+  K1 --> R4[Country Facts Result]
+
+  R1 --> Z[Final Aggregation]
+  R2 --> Z
+  R3 --> Z
+  R4 --> Z
+
+  Z --> O[Final Answer]
+        </pre>
+      </section>
+
+      <footer class="footer">
+        <div class="muted">
+          Built with LangChain tools and free public APIs. Demo served via FastAPI.
+        </div>
+      </footer>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

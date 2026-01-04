@@ -1,217 +1,216 @@
-# Travel Concierge – Router Pattern with Free APIs
+# Travel Concierge — Multi-Agent AI Demo
 
-## Overview
+A production-style multi-agent Travel Concierge built using LangGraph, LangChain, and FastAPI.
 
-Travel Concierge is a multi-agent router-style application built using LangChain and a graph-based workflow.  
-It demonstrates how a single user query can be decomposed and routed to specialized agents that fetch live, authoritative data from free public APIs.
+This project demonstrates how multiple specialized agents can be orchestrated to answer a single real-world travel query by calling live public APIs instead of relying on model hallucinations.
 
-The project intentionally avoids paid services, authentication-heavy APIs, and regex-based sanitization.  
-All data dependencies are handled through deterministic tools wherever possible.
-
-## Example User Query
-
-"I'm traveling to Japan next week. What time is it there right now, are there any upcoming public holidays, what's the current exchange rate from INR to JPY, and can you share some basic facts about Japan?"
-
-## What the System Answers
-
-- Current local time at the destination
-- Upcoming public holidays in the destination country
-- Live foreign exchange rate
-- Basic country facts
-
-All results are combined into a single coherent response.
+The application runs locally and is exposed publicly using ngrok, making it suitable for portfolio demos and LinkedIn showcases.
 
 ---
 
-## Architecture Summary
+## What This Demo Does
 
-The system follows a **router pattern**:
+Given a single user question such as:
 
-1. The user submits a single query.
-2. A router classifies which information is required.
-3. Specialized agents are invoked.
-4. Each agent uses one or more tools.
-5. Results are aggregated into a final response.
+"I'm traveling to Japan next week — what time is it there right now, are there any upcoming public holidays, what's the exchange rate from INR to JPY, and can you share some basic facts about Japan?"
 
-The LLM is used for:
-- Routing
-- Tool selection
-- Final synthesis
+The system:
 
-The LLM is **not** trusted for real-time data.
+- Breaks the query into multiple intents
+- Routes each intent to a dedicated agent
+- Forces agents to call real external APIs
+- Aggregates responses into a final answer
+- Displays both the final answer and individual agent outputs in the UI
 
 ---
 
-## Project Structure
-## Project Structure
+## Architecture Overview
 
-```text
-├── tools.py      # All external API tools
-├── agents.py     # Sub-agents built on top of tools
-├── routing.py    # Routing logic
-├── workflow.py   # Graph/workflow orchestration
-├── main.py       # CLI entry point
-└── README.md
+This system uses a router-based multi-agent architecture powered by LangGraph.
+
+- A router LLM classifies user intent
+- Each intent is handled by a specialized agent
+- Agents are forced to use tools (no hallucination)
+- Results are aggregated and synthesized
+
+```mermaid
+
+flowchart TD
+    U[User enters travel query]
+    UI[FastAPI Web UI]
+    WF[LangGraph Workflow]
+    R[Router / Classifier LLM]
+
+    TA[Time Agent]
+    HA[Holidays Agent]
+    FA[FX Agent]
+    CA[Country Facts Agent]
+
+    CT[RestCountries API]
+    OM[Open-Meteo API]
+    NH[Nager.Date API]
+    FX[Frankfurter FX API]
+
+    U --> UI
+    UI --> WF
+    WF --> R
+
+    R --> TA
+    R --> HA
+    R --> FA
+    R --> CA
+
+    TA --> CT
+    TA --> OM
+
+    HA --> CT
+    HA --> NH
+
+    FA --> FX
+
+    CA --> CT
+
+    TA --> WF
+    HA --> WF
+    FA --> WF
+    CA --> WF
+
+    WF --> UI
+
+
 ```
+
+---
+
+## Agents and Responsibilities
+
+### Time Agent
+
+- Looks up the destination country
+- Extracts capital latitude and longitude
+- Fetches real local time and timezone
+- Tool usage is mandatory
+
+### Holidays Agent
+
+- Resolves country code
+- Fetches upcoming public holidays
+- Filters results within a configurable window
+
+### FX Agent
+
+- Extracts source and target currencies
+- Fetches real-time exchange rates
+- Returns formatted FX data
+
+### Country Facts Agent
+
+- Fetches authoritative country metadata
+- Capital, currency, geography, timezones
+- No hallucinated facts
 
 ---
 
 ## Tools and Data Sources
 
-This section describes **each tool**, its **data source**, and **why it exists**.
+All tools use free, public APIs with minimal sanitization.
 
-### 1. Country Lookup Tool
+### Country Information
+- API: https://restcountries.com
+- Used for country metadata and capital coordinates
 
-**Tool Name**
-- `country_lookup(country_name: str) -> dict`
+### Local Time and Timezone
+- API: https://open-meteo.com
+- Used for IANA timezone and local datetime
 
-**API Used**
-- Rest Countries API  
-  https://restcountries.com
+### Public Holidays
+- API: https://date.nager.at
+- Used for official national holidays
 
-**Purpose**
-- Fetch authoritative country metadata.
-- Provide capital city coordinates required for downstream time calculation.
-
-**Returned Data**
-- Country name
-- Capital
-- ISO country code
-- Timezones
-- Currencies
-- Capital latitude
-- Capital longitude
-
-This tool returns a **dictionary**, not text, because other tools depend on its output.
+### Exchange Rates
+- API: https://www.frankfurter.dev
+- Used for real-time FX rates
 
 ---
 
-### 2. Local Time from Coordinates Tool
+## Project Structure
 
-**Tool Name**
-- `local_time_from_latlon(latitude: float, longitude: float) -> dict`
-
-**API Used**
-- Open-Meteo API  
-  https://open-meteo.com
-
-**Purpose**
-- Determine the correct IANA timezone.
-- Fetch the current local time reliably.
-
-**Returned Data**
-- Timezone (IANA format)
-- Local datetime
-
-This avoids flaky world-time APIs and avoids timezone guessing.
-
----
-
-### 3. Upcoming Public Holidays Tool
-
-**Tool Name**
-- `upcoming_public_holidays(country_code: str, days_ahead: int = 10) -> str`
-
-**API Used**
-- Nager.Date API  
-  https://date.nager.at
-
-**Purpose**
-- Retrieve upcoming public holidays for the destination country.
-
-**Returned Data**
-- A formatted list of holidays within the specified window.
-
----
-
-### 4. Foreign Exchange Rate Tool
-
-**Tool Name**
-- `fx_rate(from_ccy: str, to_ccy: str) -> str`
-
-**API Used**
-- Frankfurter API  
-  https://www.frankfurter.app
-
-**Purpose**
-- Retrieve live FX rates without authentication.
-
-**Returned Data**
-- Exchange rate with date context.
-
----
-
-## Agents
-
-### Country Facts Agent
-- Uses `country_lookup`
-- Summarizes country information
-
-### Time Agent
-- Uses a tool-forced model (`tool_choice="required"`)
-- Always calls:
-  1. `country_lookup`
-  2. `local_time_from_latlon`
-- Never answers from model knowledge
-
-### Holidays Agent
-- Uses:
-  - `country_lookup`
-  - `upcoming_public_holidays`
-
-### FX Agent
-- Uses:
-  - `fx_rate`
-
----
-
-## Tool Enforcement (Important)
-
-The Time Agent binds tools using:
-
-```
-tool_choice="required"
+```text
+Travel-Concierge/
+├── api.py # FastAPI app
+├── workflow.py # LangGraph workflow
+├── routing.py # Router and graph nodes
+├── agents.py # Agent definitions
+├── tool.py # External API tools
+├── templates/
+│ └── index.html
+├── static/
+│ ├── style.css
+│ └── app.js
+├── architecture.md
+├── requirements.txt
+└── README.md
 ```
 
-
-This ensures:
-- The model **cannot** answer from general knowledge
-- Real-time data is always fetched from APIs
-- No hallucinated timestamps or UTC offsets
-
 ---
 
-## Mermaid Flow Diagram
+## Running Locally
 
-```mermaid
-flowchart TD
-    A[User Query] --> B[Router]
+- Install dependencies:
 
-    B --> C1[Time Agent]
-    B --> C2[Holidays Agent]
-    B --> C3[FX Agent]
-    B --> C4[Country Facts Agent]
+```bash
+pip install -r requirements.txt
+```
 
-    C1 --> T1[country_lookup]
-    T1 --> T2[local_time_from_latlon]
-    T2 --> R1[Time Result]
+- Set your API key:
 
-    C2 --> H1[country_lookup]
-    H1 --> H2[upcoming_public_holidays]
-    H2 --> R2[Holiday Result]
+```bash
+export OPENAI_API_KEY=sk-xxxx
+```
 
-    C3 --> F1[fx_rate]
-    F1 --> R3[FX Result]
+- Start the Server:
 
-    C4 --> K1[country_lookup]
-    K1 --> R4[Country Facts Result]
+```bash
+uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
 
-    R1 --> Z[Final Aggregation]
-    R2 --> Z
-    R3 --> Z
-    R4 --> Z
+- Open:
 
-    Z --> O[Final Answer]
+```
+http://localhost:8000
+```
+
+## Exposing with ngrok
+
+```
+ngrok http 8000 --domain <your-static-domain>
+```
+
+## Tech Stack
+
+- Python 3.11+
+
+- LangGraph
+
+- LangChain
+
+- FastAPI
+
+- OpenAI GPT-4o-mini
+
+- Open-Meteo
+
+- RestCountries
+
+- Nager.Date
+
+- Frankfurter FX
+
+- ngrok
+
+## License
+
+MIT License
 
 
-
+---
