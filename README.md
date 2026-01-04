@@ -1,6 +1,6 @@
 # Travel Concierge — Multi-Agent AI Demo
 
-A production-style multi-agent Travel Concierge built using LangGraph, LangChain, and FastAPI.
+A multi-agent Travel Concierge built using LangGraph, LangChain, and FastAPI.
 
 This project demonstrates how multiple specialized agents can be orchestrated to answer a single real-world travel query by calling live public APIs instead of relying on model hallucinations.
 
@@ -8,7 +8,7 @@ The application is exposed here: https://travel-concierge-tgsb.onrender.com/
 
 ---
 
-## What This Demo Does
+## What Does This Application Do?
 
 Given a single user question such as:
 
