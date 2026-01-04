@@ -1,10 +1,10 @@
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
-from tool import country_lookup, get_time_for_timezone, upcoming_public_holidays, fx_rate
+from tool import country_lookup, local_time_from_latlon, upcoming_public_holidays, fx_rate
 
 import os
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "sk-*"
 model = init_chat_model("openai:gpt-4o-mini")
 
 country_agent = create_agent(
@@ -16,14 +16,33 @@ country_agent = create_agent(
     ),
 )
 
+"""
+Agent is still allowed to answer from its own knowledge when it thinks it can, 
+and LangChain does not guarantee tool usage unless you hard-enforce it.
+
+Hence we get output like:
+
+### Current Time in Japan
+Japan operates on Japan Standard Time (UTC+09:00). If you are traveling next week, please check the current time using a world clock, as I cannot provide real-time information.
+
+"""
+
+tool_model = model.bind_tools(
+    tools=[country_lookup, local_time_from_latlon],
+    tool_choice="required",
+)
+
 time_agent = create_agent(
-    model,
-    tools=[country_lookup, get_time_for_timezone],
+    tool_model,
+    tools=[country_lookup, local_time_from_latlon],
     system_prompt=(
-        "You are a local-time agent. "
-        "If user gives a country name, first call country_lookup to get a timezone. "
-        "Pick the most relevant timezone (usually the first) and call get_time_for_timezone. "
-        "Return the local time in a concise way."
+        "You are the Time Agent.\n"
+        "You MUST use tools.\n\n"
+        "Steps:\n"
+        "1) Call country_lookup(country_name).\n"
+        "2) Use capital_latitude and capital_longitude.\n"
+        "3) Call local_time_from_latlon(latitude, longitude).\n"
+        "Return EXACTLY the dict from step 3 (no extra keys, no extra text).\n"
     ),
 )
 

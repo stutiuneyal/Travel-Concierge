@@ -5,35 +5,16 @@ import time
 import random
 
 
-UA = "TripConciergeRouter/1.0 (demo; contact: you@example.com)"
+UA = "TripConciergeRouter/1.0"
 
-def _get(url: str, params: dict | None = None, timeout: int = 20, retries: int = 3) -> dict:
-    last_err = None
-    for attempt in range(retries):
-        try:
-            r = requests.get(
-                url,
-                params=params or {},
-                timeout=timeout,
-                headers={"User-Agent": UA},
-            )
-            r.raise_for_status()
-            return r.json()
-
-        except (requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.HTTPError) as e:
-            last_err = e
-            # exponential backoff + jitter
-            sleep_s = (2 ** attempt) + random.random()
-            time.sleep(sleep_s)
-
-    # After retries, raise a clean error (or return empty)
-    raise RuntimeError(f"HTTP failed after {retries} retries for {url}: {last_err}")
+def _get(url: str, params: dict | None = None, timeout: int = 20) -> dict:
+    r = requests.get(url, params=params or {}, timeout=timeout, headers={"User-Agent": UA})
+    r.raise_for_status()
+    return r.json()
 
 
 @tool
-def country_lookup(country_name: str) -> str:
+def country_lookup(country_name: str) -> dict:
     """
     Docstring for country_lookup
     
@@ -60,36 +41,36 @@ def country_lookup(country_name: str) -> str:
     timezones= c.get("timezones") or []
     currencies = [] 
     for k,v in (c.get("currencies") or {}).items():
-        currencies.append(f"{k} ({v.get('name', '')})") 
+        currencies.append(f"{k} ({v.get('name', '')})")
 
-    return (
-        f"Country: {name}\n"
-        f"Capital: {capital}\n"
-        f"Code: {code}\n"
-        f"Timezones: {', '.join(timezones) if timezones else 'N/A'}\n"
-        f"Currencies: {', '.join(currencies) if currencies else 'N/A'}"
-    )
+    latlng = (c.get("capitalInfo") or {}).get("latlng")
+    lat = float(latlng[0]) if isinstance(latlng, list) and len(latlng) == 2 else None
+    lon = float(latlng[1]) if isinstance(latlng, list) and len(latlng) == 2 else None
+
+    return {
+        "country": name,
+        "capital": capital,
+        "code": code,
+        "timezones": timezones or [],
+        "currencies": currencies or [],
+        "capital_latitude": lat,
+        "capital_longitude": lon,
+    }
 
 @tool
-def get_time_for_timezone(timezone: str)-> str:
+def local_time_from_latlon(latitude: float, longitude: float) -> dict:
     """
-    Docstring for get_time_for_timezone
-    
-    :param timezone: Description
-    :type timezone: str
-    :return: Description
-    :rtype: str
+    Returns local time and timezone using Open-Meteo (no key, stable).
     """
-
     data = _get(
-        f"http://worldtimeapi.org/api/{timezone}"
+        "https://api.open-meteo.com/v1/forecast",
+        params={"latitude": latitude, "longitude": longitude, "current": "temperature_2m"},
     )
+    return {
+        "timezone": data.get("timezone") or "N/A",
+        "local_datetime": (data.get("current") or {}).get("time") or "N/A",
+    }
 
-    return (
-        f"Timezone: {data.get('timezone')}\n"
-        f"Local datetime: {data.get('datetime')}\n"
-        f"UTC offset: {data.get('utc_offset')}"
-    )
 
 @tool
 def upcoming_public_holidays(country_code: str, days_ahead: int=10 ) -> str:

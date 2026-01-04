@@ -23,7 +23,7 @@ class RoutePlan(BaseModel):
 
 import os
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "sk-*"
 router_llm = init_chat_model("openai:gpt-4o-mini").with_structured_output(RoutePlan)
 
 
