@@ -3,9 +3,11 @@ import getpass #pass values as passwords in the terminal
 from langchain_openai import ChatOpenAI
 
 os.environ["LANGSMITH_TRACING"] = "true"
-os.environ["LANGSMITH_API_KEY"] = getpass.getpass()
 
-os.environ["OPENAI_API_KEY"] = "sk-*"
+assert os.getenv("LANGSMITH_API_KEY"), "LANGSMITH_API_KEY not set"
+assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY not set"
+
+print(os.getenv("OPENAI_API_KEY"))
 
 model = ChatOpenAI(model="gpt-4.1")
 

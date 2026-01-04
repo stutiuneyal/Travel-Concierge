@@ -4,7 +4,7 @@ from tool import country_lookup, local_time_from_latlon, upcoming_public_holiday
 
 import os
 
-os.environ["OPENAI_API_KEY"] = "sk-*"
+assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY not set"
 model = init_chat_model("openai:gpt-4o-mini")
 
 country_agent = create_agent(

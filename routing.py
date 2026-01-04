@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from langchain.chat_models import init_chat_model
 from langgraph.types import Send
+import os
 
 from states import RouterState, AgentInput
 from agents import country_agent, time_agent, holidays_agent, fx_agent
@@ -21,9 +22,8 @@ class RoutePlan(BaseModel):
     to_ccy: str | None = Field(default=None, description="Currency code like JPY")
 
 
-import os
 
-os.environ["OPENAI_API_KEY"] = "sk-*"
+assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY not set"
 router_llm = init_chat_model("openai:gpt-4o-mini").with_structured_output(RoutePlan)
 
 
