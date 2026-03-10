@@ -1,216 +1,332 @@
-# Travel Concierge — Multi-Agent AI Demo
 
-A multi-agent Travel Concierge built using LangGraph, LangChain, and FastAPI.
+# Travel Concierge AI
 
-This project demonstrates how multiple specialized agents can be orchestrated to answer a single real-world travel query by calling live public APIs instead of relying on model hallucinations.
+An **AI-powered trip planning assistant** built using **LangGraph, FastAPI, and multiple travel APIs**.
 
-The application is exposed here: https://travel-concierge-tgsb.onrender.com/
-
----
-
-## What Does This Application Do?
-
-Given a single user question such as:
-
-"I'm traveling to Japan next week — what time is it there right now, are there any upcoming public holidays, what's the exchange rate from INR to JPY, and can you share some basic facts about Japan?"
-
-The system:
-
-- Breaks the query into multiple intents
-- Routes each intent to a dedicated agent
-- Forces agents to call real external APIs
-- Aggregates responses into a final answer
-- Displays both the final answer and individual agent outputs in the UI
+It intelligently combines **LLM reasoning with real-world APIs** to generate **complete travel plans including flights, hotels, weather insights, places to visit, budgets, visa information, and downloadable itinerary PDFs**.
 
 ---
 
-## Architecture Overview
+# Key Features
 
-This system uses a router-based multi-agent architecture powered by LangGraph.
+The system supports **9 AI-powered travel capabilities**.
 
-- A router LLM classifies user intent
-- Each intent is handled by a specialized agent
-- Agents are forced to use tools (no hallucination)
-- Results are aggregated and synthesized
+| Capability | Description |
+|---|---|
+| Trip Context | Extracts structured travel details from conversation |
+| Flight Search | Retrieves real flight options using Amadeus API |
+| Hotel Search | Finds hotels in destination cities |
+| Weather Forecast | Retrieves forecast for travel dates |
+| Places Discovery | Finds attractions using Google Places |
+| Budget Estimation | Calculates travel budget estimates |
+| Itinerary Planning | Generates a day-wise itinerary |
+| Visa Information | Provides informational visa guidance |
+| PDF Export | Generates downloadable itinerary PDF |
+
+---
+
+# Architecture Overview
+
+The system uses **LangGraph** to orchestrate AI agents.
+
+The workflow combines:
+
+1. **LLM reasoning**
+2. **API tool calls**
+3. **specialist agents**
+4. **final synthesis**
+
+---
+
+# High Level Architecture
 
 ```mermaid
-
 flowchart TD
-    U[User enters travel query]
-    UI[FastAPI Web UI]
-    WF[LangGraph Workflow]
-    R[Router / Classifier LLM]
 
-    TA[Time Agent]
-    HA[Holidays Agent]
-    FA[FX Agent]
-    CA[Country Facts Agent]
+User --> API
+API --> LangGraph
 
-    CT[RestCountries API]
-    OM[Open-Meteo API]
-    NH[Nager.Date API]
-    FX[Frankfurter FX API]
+LangGraph --> ContextExtractor
+ContextExtractor --> Router
 
-    U --> UI
-    UI --> WF
-    WF --> R
+Router --> FlightAgent
+Router --> HotelAgent
+Router --> WeatherAgent
+Router --> PlacesAgent
+Router --> VisaAgent
 
-    R --> TA
-    R --> HA
-    R --> FA
-    R --> CA
+FlightAgent --> BudgetAgent
+HotelAgent --> BudgetAgent
 
-    TA --> CT
-    TA --> OM
+BudgetAgent --> ItineraryAgent
+PlacesAgent --> ItineraryAgent
+WeatherAgent --> ItineraryAgent
 
-    HA --> CT
-    HA --> NH
+ItineraryAgent --> PDFAgent
+PDFAgent --> FinalSynthesizer
 
-    FA --> FX
-
-    CA --> CT
-
-    TA --> WF
-    HA --> WF
-    FA --> WF
-    CA --> WF
-
-    WF --> UI
-
-
+FinalSynthesizer --> API
+API --> User
 ```
 
 ---
 
-## Agents and Responsibilities
+# LangGraph Workflow
 
-### Time Agent
+```mermaid
+flowchart LR
 
-- Looks up the destination country
-- Extracts capital latitude and longitude
-- Fetches real local time and timezone
-- Tool usage is mandatory
+Start --> update_trip_context
+update_trip_context --> classify
 
-### Holidays Agent
+classify --> flight_check
+classify --> hotel_check
+classify --> weather_check
+classify --> places_check
+classify --> visa_check
+classify --> budget_check
+classify --> itinerary_check
+classify --> pdf_check
 
-- Resolves country code
-- Fetches upcoming public holidays
-- Filters results within a configurable window
+flight_check --> run_flight
+hotel_check --> run_hotel
+weather_check --> run_weather
+places_check --> run_places
+visa_check --> run_visa
+budget_check --> run_budget
+itinerary_check --> run_itinerary
+pdf_check --> run_pdf
 
-### FX Agent
+run_flight --> synthesize
+run_hotel --> synthesize
+run_weather --> synthesize
+run_places --> synthesize
+run_visa --> synthesize
+run_budget --> synthesize
+run_itinerary --> synthesize
+run_pdf --> synthesize
 
-- Extracts source and target currencies
-- Fetches real-time exchange rates
-- Returns formatted FX data
-
-### Country Facts Agent
-
-- Fetches authoritative country metadata
-- Capital, currency, geography, timezones
-- No hallucinated facts
-
----
-
-## Tools and Data Sources
-
-All tools use free, public APIs with minimal sanitization.
-
-### Country Information
-- API: https://restcountries.com
-- Used for country metadata and capital coordinates
-
-### Local Time and Timezone
-- API: https://open-meteo.com
-- Used for IANA timezone and local datetime
-
-### Public Holidays
-- API: https://date.nager.at
-- Used for official national holidays
-
-### Exchange Rates
-- API: https://www.frankfurter.dev
-- Used for real-time FX rates
+synthesize --> End
+```
 
 ---
 
-## Project Structure
+# Project Structure
 
-```text
-Travel-Concierge/
-├── api.py # FastAPI app
-├── workflow.py # LangGraph workflow
-├── routing.py # Router and graph nodes
-├── agents.py # Agent definitions
-├── tool.py # External API tools
-├── templates/
-│ └── index.html
-├── static/
-│ ├── styles.css
-│ └── app.js
-├── architecture.md
+```
+travel-concierge
+│
+├── api.py
+├── workflow.py
 ├── requirements.txt
-└── README.md
+├── render.yaml
+│
+├── agents
+│   ├── flight_agent.py
+│   ├── hotel_agent.py
+│   ├── weather_agent.py
+│   ├── places_agent.py
+│   ├── budget_agent.py
+│   ├── itinerary_agent.py
+│   ├── visa_agent.py
+│   └── pdf_agent.py
+│
+├── memory
+│   └── trip_context.py
+│
+├── routing
+│   └── router.py
+│
+├── tools
+│   ├── amadeus_tools.py
+│   ├── weather_tools.py
+│   ├── places_tools.py
+│   ├── visa_tools.py
+│   └── fx_tools.py
+│
+├── services
+│   ├── amadeus_client.py
+│   ├── google_places_client.py
+│   ├── open_meteo_client.py
+│   └── pdf_service.py
+│
+├── states
+│   └── graph_state.py
+│
+├── core
+│   ├── llm.py
+│   ├── prompts.py
+│   └── utils.py
+│
+├── templates
+│   ├── index.html
+│   └── itinerary_pdf.html
+│
+└── static
+    ├── styles.css
+    └── app.js
 ```
 
 ---
 
-## Running Locally
+# Installation
 
-- Install dependencies:
+### Clone repository
+
+```bash
+git clone https://github.com/yourrepo/travel-concierge
+cd travel-concierge
+```
+
+### Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-- Set your API key:
+Install Playwright browser:
 
 ```bash
-export OPENAI_API_KEY=sk-xxxx
+python -m playwright install chromium
 ```
 
-- Start the Server:
+---
+
+# Environment Variables
+
+Create `.env`
+
+```
+OPENAI_API_KEY=
+
+MONGODB_URI=
+MONGODB_DB=travel_concierge
+
+AMADEUS_CLIENT_ID=
+AMADEUS_CLIENT_SECRET=
+
+GOOGLE_PLACES_API_KEY=
+
+APP_BASE_URL=http://localhost:8000
+DEFAULT_HOME_CURRENCY=INR
+```
+
+---
+
+# Running the Server
 
 ```bash
-uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+uvicorn api:app --reload
 ```
 
-- Open:
+Server runs on:
 
 ```
 http://localhost:8000
 ```
 
-## Exposing with ngrok
+---
+
+# API Endpoints
+
+## Health Check
 
 ```
-ngrok http 8000 --domain <your-static-domain>
+GET /api/health
 ```
 
-## Tech Stack
+Response
 
-- Python 3.11+
-
-- LangGraph
-
-- LangChain
-
-- FastAPI
-
-- OpenAI GPT-4o-mini
-
-- Open-Meteo
-
-- RestCountries
-
-- Nager.Date
-
-- Frankfurter FX
-
-- ngrok
-
-## License
-
-MIT License
-
+```
+{
+ "status": "ok"
+}
+```
 
 ---
+
+## Ask Travel Question
+
+```
+POST /api/ask
+```
+
+Body
+
+```
+{
+ "query": "Plan a 5 day Thailand trip from Bangalore",
+ "session_id": "optional"
+}
+```
+
+Response
+
+```
+{
+ "final_answer": "...",
+ "agents_used": ["Flight Agent","Hotel Agent"],
+ "pdf_url": "/downloads/itinerary_abc.pdf"
+}
+```
+
+---
+
+# Session Memory
+
+Conversations are persisted in **MongoDB Atlas** using LangGraph checkpointers.
+
+Benefits:
+
+- multi-turn context
+- session awareness
+- scalable persistence
+
+---
+
+# Deployment
+
+The application is designed to deploy easily on **Render**.
+
+Deploy steps:
+
+1. Connect GitHub repo
+2. Add environment variables
+3. Deploy
+
+---
+
+# Future Improvements
+
+Possible enhancements:
+
+- multi-city trip planning
+- cheaper date flight search
+- restaurant booking
+- Google Maps route optimization
+- price alerts
+- airline seat class comparison
+- visa API integration
+- travel insurance suggestions
+
+---
+
+# Tech Stack
+
+| Component | Technology |
+|---|---|
+Backend | FastAPI |
+AI Orchestration | LangGraph |
+LLM | OpenAI GPT |
+Flights | Amadeus |
+Hotels | Amadeus |
+Weather | Open-Meteo |
+Places | Google Places |
+PDF | Playwright |
+Database | MongoDB Atlas |
+
+---
+
+# License
+
+MIT License
