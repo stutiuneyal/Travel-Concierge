@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      color: #111827;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #111827;
+    }
+
+    h3 {
+      margin: 12px 0 6px 0;
+      font-size: 15px;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      page-break-inside: avoid;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f4f6;
+    }
+
+    ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+
+    p {
+      margin: 6px 0;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Trip Itinerary</h1>
+
+  <div class="card">
+    <h2>Trip Context</h2>
+    <div class="grid">
+      <div><span class="label">Origin:</span> {{ payload.trip_context.origin_city or "-" }}, {{
+        payload.trip_context.origin_country or "-" }}</div>
+      <div><span class="label">Destination:</span> {{ payload.trip_context.destination_city or "-" }}, {{
+        payload.trip_context.destination_country or "-" }}</div>
+      <div><span class="label">Start Date:</span> {{ payload.trip_context.start_date or "-" }}</div>
+      <div><span class="label">End Date:</span> {{ payload.trip_context.end_date or "-" }}</div>
+      <div><span class="label">Duration:</span> {{ payload.trip_context.duration_days or "-" }} days</div>
+      <div><span class="label">Budget Level:</span> {{ payload.trip_context.budget_level or "-" }}</div>
+      <div><span class="label">Currency:</span> {{ payload.trip_context.home_currency or "-" }}</div>
+      <div><span class="label">Travelers:</span> {{ payload.trip_context.travelers or 1 }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Flights</h2>
+    {% if payload.flights %}
+    <table>
+      <thead>
+        <tr>
+          <th>Carrier</th>
+          <th>Departure</th>
+          <th>Arrival</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for flight in payload.flights %}
+        <tr>
+          <td>{{ flight.airline or "-" }}</td>
+          <td>
+            {{ flight.origin or "-" }}
+            {% if flight.departure %}
+            <br><span class="muted">{{ flight.departure }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {{ flight.destination or "-" }}
+            {% if flight.arrival %}
+            <br><span class="muted">{{ flight.arrival }}</span>
+            {% endif %}
+          </td>
+          <td>{{ flight.currency or "" }} {{ flight.price or "-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No flight options available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Flight Insights</h2>
+    {% if payload.flight_insights %}
+    {% if payload.flight_insights.cheapest_option_summary %}
+    <p><span class="label">Cheapest Option:</span> {{ payload.flight_insights.cheapest_option_summary }}</p>
+    {% endif %}
+    {% if payload.flight_insights.best_overall_summary %}
+    <p><span class="label">Best Overall:</span> {{ payload.flight_insights.best_overall_summary }}</p>
+    {% endif %}
+    {% if payload.flight_insights.traveler_advice %}
+    <p><span class="label">Traveler Advice:</span> {{ payload.flight_insights.traveler_advice }}</p>
+    {% endif %}
+    {% else %}
+    <p>No flight insights available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Hotels</h2>
+    {% if payload.hotels %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Rating</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hotel in payload.hotels %}
+        <tr>
+          <td>
+            {{ hotel.name or "-" }}
+            {% if hotel.distance_km %}
+            <br><span class="muted">{{ hotel.distance_km }} {{ hotel.distance_unit or "KM" }} from center</span>
+            {% endif %}
+          </td>
+          <td>{{ hotel.address or "-" }}</td>
+          <td>
+            {{ hotel.rating or "-" }}
+            {% if hotel.user_rating_count %}
+            <span class="muted">({{ hotel.user_rating_count }} reviews)</span>
+            {% endif %}
+          </td>
+          <td>{{ hotel.currency or "" }} {{ hotel.price or "-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No hotel options available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Hotel Insights</h2>
+    {% if payload.hotel_insights %}
+    {% if payload.hotel_insights.shortlist_summary %}
+    <p><span class="label">Shortlist:</span> {{ payload.hotel_insights.shortlist_summary }}</p>
+    {% endif %}
+    {% if payload.hotel_insights.best_area_advice %}
+    <p><span class="label">Best Area Advice:</span> {{ payload.hotel_insights.best_area_advice }}</p>
+    {% endif %}
+    {% if payload.hotel_insights.booking_advice %}
+    <p><span class="label">Booking Advice:</span> {{ payload.hotel_insights.booking_advice }}</p>
+    {% endif %}
+    {% else %}
+    <p>No hotel insights available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Weather</h2>
+    {% if payload.weather_summary %}
+    {% if payload.weather_summary.place %}
+    <p><span class="label">Place:</span> {{ payload.weather_summary.place }}</p>
+    {% endif %}
+    {% if payload.weather_summary.timezone %}
+    <p><span class="label">Timezone:</span> {{ payload.weather_summary.timezone }}</p>
+    {% endif %}
+
+    {% if payload.weather_summary.dates %}
+    <p><span class="label">Travel Dates Covered:</span> {{ payload.weather_summary.dates | join(", ") }}</p>
+    {% endif %}
+
+    {% if payload.weather_summary.max_temps %}
+    <p><span class="label">Max Temperatures:</span> {{ payload.weather_summary.max_temps | join(", ") }} °C</p>
+    {% endif %}
+
+    {% if payload.weather_summary.min_temps %}
+    <p><span class="label">Min Temperatures:</span> {{ payload.weather_summary.min_temps | join(", ") }} °C</p>
+    {% endif %}
+
+    {% if payload.weather_summary.rain_probability %}
+    <p><span class="label">Rain Probability:</span> {{ payload.weather_summary.rain_probability | join(", ") }}%</p>
+    {% endif %}
+    {% else %}
+    <p>No weather summary available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Weather Insights</h2>
+    {% if payload.weather_insights %}
+    {% if payload.weather_insights.weather_summary %}
+    <p><span class="label">Summary:</span> {{ payload.weather_insights.weather_summary }}</p>
+    {% endif %}
+    {% if payload.weather_insights.planning_advice %}
+    <p><span class="label">Planning Advice:</span> {{ payload.weather_insights.planning_advice }}</p>
+    {% endif %}
+    {% if payload.weather_insights.packing_advice %}
+    <p><span class="label">Packing Advice:</span> {{ payload.weather_insights.packing_advice }}</p>
+    {% endif %}
+    {% else %}
+    <p>No weather insights available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Places</h2>
+    {% if payload.places %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Type</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for place in payload.places %}
+        <tr>
+          <td>
+            {% if place.displayName %}
+            {{ place.displayName.text or "-" }}
+            {% else %}
+            {{ place.name or "-" }}
+            {% endif %}
+          </td>
+          <td>{{ place.formattedAddress or place.address or "-" }}</td>
+          <td>{{ place.primaryType or "-" }}</td>
+          <td>
+            {{ place.rating or "-" }}
+            {% if place.userRatingCount %}
+            <span class="muted">({{ place.userRatingCount }} reviews)</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No place recommendations available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Places Insights</h2>
+    {% if payload.places_insights %}
+    {% if payload.places_insights.must_visit_summary %}
+    <p><span class="label">Must Visit Summary:</span> {{ payload.places_insights.must_visit_summary }}</p>
+    {% endif %}
+    {% if payload.places_insights.grouped_themes %}
+    <p><span class="label">Grouped Themes:</span> {{ payload.places_insights.grouped_themes }}</p>
+    {% endif %}
+    {% if payload.places_insights.planning_advice %}
+    <p><span class="label">Planning Advice:</span> {{ payload.places_insights.planning_advice }}</p>
+    {% endif %}
+    {% else %}
+    <p>No place insights available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Budget Summary</h2>
+    {% if payload.budget_summary %}
+    {% if payload.budget_summary.currency %}
+    <p><span class="label">Currency:</span> {{ payload.budget_summary.currency }}</p>
+    {% endif %}
+    {% if payload.budget_summary.flight_estimate %}
+    <p><span class="label">Flight Estimate:</span> {{ payload.budget_summary.currency or "" }} {{
+      payload.budget_summary.flight_estimate }}</p>
+    {% endif %}
+    {% if payload.budget_summary.hotel_estimate %}
+    <p><span class="label">Hotel Estimate:</span> {{ payload.budget_summary.currency or "" }} {{
+      payload.budget_summary.hotel_estimate }}</p>
+    {% endif %}
+    {% if payload.budget_summary.local_spend_estimate %}
+    <p><span class="label">Local Spend Estimate:</span> {{ payload.budget_summary.currency or "" }} {{
+      payload.budget_summary.local_spend_estimate }}</p>
+    {% endif %}
+    {% if payload.budget_summary.total_estimate %}
+    <p><span class="label">Total Estimate:</span> {{ payload.budget_summary.currency or "" }} {{
+      payload.budget_summary.total_estimate }}</p>
+    {% endif %}
+    {% if payload.budget_summary.notes %}
+    <p><span class="label">Notes:</span> {{ payload.budget_summary.notes }}</p>
+    {% endif %}
+
+    {% if payload.budget_summary.insights %}
+    {% if payload.budget_summary.insights.budget_summary %}
+    <p><span class="label">Budget Insight:</span> {{ payload.budget_summary.insights.budget_summary }}</p>
+    {% endif %}
+    {% if payload.budget_summary.insights.savings_tips %}
+    <p><span class="label">Savings Tips:</span> {{ payload.budget_summary.insights.savings_tips }}</p>
+    {% endif %}
+    {% if payload.budget_summary.insights.daily_spend_guidance %}
+    <p><span class="label">Daily Spend Guidance:</span> {{ payload.budget_summary.insights.daily_spend_guidance }}</p>
+    {% endif %}
+    {% endif %}
+    {% else %}
+    <p>No budget summary available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Itinerary</h2>
+    {% if payload.itinerary %}
+    {% if payload.itinerary is string %}
+    <p>{{ payload.itinerary }}</p>
+    {% elif payload.itinerary.days %}
+    {% for day in payload.itinerary.days %}
+    <div style="margin-bottom: 12px;">
+      <h3>Day {{ day.day or loop.index }}{% if day.title %} - {{ day.title }}{% endif %}</h3>
+      {% if day.morning %}<p><span class="label">Morning:</span> {{ day.morning }}</p>{% endif %}
+      {% if day.afternoon %}<p><span class="label">Afternoon:</span> {{ day.afternoon }}</p>{% endif %}
+      {% if day.evening %}<p><span class="label">Evening:</span> {{ day.evening }}</p>{% endif %}
+      {% if day.notes %}<p><span class="label">Notes:</span> {{ day.notes }}</p>{% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>{{ payload.itinerary }}</p>
+    {% endif %}
+    {% else %}
+    <p>No itinerary available.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Visa Information</h2>
+    {% if payload.visa_info %}
+    {% if payload.visa_info is string %}
+    <p>{{ payload.visa_info }}</p>
+    {% else %}
+    <ul>
+      {% for key, value in payload.visa_info.items() %}
+      <li><span class="label">{{ key.replace("_", " ").title() }}:</span> {{ value }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% else %}
+    <p>No visa information available.</p>
+    {% endif %}
+  </div>
+</body>
+
+</html>
