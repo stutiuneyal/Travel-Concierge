@@ -1,8 +1,10 @@
 from __future__ import annotations
 from langgraph.graph import StateGraph, END
-
+from pymongo import MongoClient
 from states import RouterState
 from routing import classify, dispatch, run_country, run_time, run_holidays, run_fx, synthesize
+from langgraph.checkpoint.mongodb import MongoDBSaver
+import os
 
 
 def build_workflow():
@@ -27,5 +29,14 @@ def build_workflow():
     g.add_edge("run_holidays", "synthesize")
     g.add_edge("run_fx", "synthesize")
     g.add_edge("synthesize", END)
+    
+    mongodb_uri = os.getenv("MONGODB_URI")
+    mongodb_db = os.getenv("MONGODB_DB","travel_concierge")
+    
+    if not mongodb_uri:
+        raise ValueError("MONGODB_URI is not set")
 
-    return g.compile()
+    client = MongoClient(mongodb_uri)
+    checkpointer = MongoDBSaver(client=client,db_name=mongodb_db)
+
+    return g.compile(checkpointer=checkpointer)

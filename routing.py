@@ -1,6 +1,7 @@
 from typing import List
 from pydantic import BaseModel, Field
 from langchain.chat_models import init_chat_model
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Send
 import os
 
@@ -13,6 +14,27 @@ def _agent_text(res) -> str:
         return getattr(res["messages"][-1], "content", str(res["messages"][-1]))
     return str(res)
 
+def _recent_history_text(messages,limit:int = 8) -> str:
+    if not messages:
+        return ""
+    
+    lines = []
+    for m in messages[-limit:]:
+        if isinstance(m, HumanMessage):
+            role = "user"
+        elif isinstance(m,AIMessage):
+            role = "assisstant"
+        else:
+            role = getattr(m, "type", "unknown")
+    
+        content = getattr(m,"content","")
+        if isinstance(content,List):
+            content = str(content)
+        
+        lines.append(f"{role}: {content}")
+    
+    return "\n".join(lines)
+    
 class RoutePlan(BaseModel):
     routes: List[str] = Field(
         description="List of routes to run. Allowed: country, time, holidays, fx"
@@ -29,6 +51,7 @@ router_llm = init_chat_model("openai:gpt-4o-mini").with_structured_output(RouteP
 
 def classify(state: RouterState) -> RouterState:
     q = state["query"].strip()
+    history = _recent_history_text(state.get("messages", []))
 
     plan: RoutePlan = router_llm.invoke(
         f"""
@@ -39,7 +62,11 @@ Return a plan:
 - country: the country name if user is asking about a country
 - from_ccy, to_ccy: for fx if present
 
-User query: {q}
+Recent conversation:
+{history}
+
+Current query:
+{q}
 """
     )
 
@@ -90,18 +117,31 @@ def run_fx(inp: AgentInput) -> dict:
 
 
 def synthesize(state: RouterState) -> RouterState:
+    history = _recent_history_text(state.get("messages", []))
     chunks = "\n\n".join([f"[{r['source'].upper()}]\n{r['result']}" for r in state["results"]])
 
     final_llm = init_chat_model("openai:gpt-4o-mini")
     final = final_llm.invoke(
         f"""
 You are the final travel assistant.
-User query: {state["query"]}
+
+Use:
+1. the current user query
+2. the recent conversation history
+3. the specialist outputs
+
+Recent conversation:
+{history}
+
+Current user query:
+{state["query"]}
 
 Specialist results:
 {chunks}
 
-Write ONE consolidated answer with short sections.
+Write one clear consolidated answer with short sections where useful.
+Resolve follow-up references correctly.
+Do not mention internal agents.
 """
     ).content #returns the content returned from llm
 

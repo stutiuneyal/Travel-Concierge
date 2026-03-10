@@ -116,7 +116,7 @@ def upcoming_public_holidays(country_code: str, days_ahead: int=10 ) -> str:
 
 
 @tool
-def fx_rate(from_ccy: str, to_ccy= str) -> str:
+def fx_rate(from_ccy: str, to_ccy: str) -> str:
     """
     Docstring for fx_rate
     

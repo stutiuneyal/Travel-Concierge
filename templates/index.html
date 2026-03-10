@@ -1,296 +1,193 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Travel Concierge</title>
+    <meta
+      name="description"
+      content="AI travel concierge for time, currency, holidays, destination facts, and trip planning."
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Travel Concierge</title>
-  <meta name="description"
-    content="AI travel concierge for time, currency, holidays, destination facts, and trip planning." />
-  <link rel="stylesheet" href="/static/styles.css" />
-</head>
-
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="container topbar-inner">
-        <div class="brand">
-          <div class="brand-badge">
-            <i data-lucide="globe"></i>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="container topbar-inner">
+          <div class="brand">
+            <div class="brand-badge">
+              <i data-lucide="globe-2"></i>
+            </div>
+            <div>
+              <h1 class="brand-title">Travel Concierge</h1>
+              <p class="brand-subtitle">
+                Multi-agent travel assistant with FastAPI, LangChain, and LangGraph
+              </p>
+            </div>
           </div>
+
+          <button class="ghost-btn" id="clearConversationBtn" type="button">
+            <i data-lucide="trash-2"></i>
+            Clear Chat
+          </button>
+        </div>
+      </header>
+
+      <main class="container chat-page">
+        <section class="hero-mini">
           <div>
-            <h1 class="brand-title">Travel Concierge</h1>
-            <p class="brand-subtitle">
-              Smart multi-agent travel planning with live utility workflows
+            <span class="eyebrow">AI travel workflow</span>
+            <h2 class="hero-heading">Ask anything about your trip</h2>
+            <p class="hero-text">
+              Timezones, holidays, exchange rates, destination facts, and travel guidance — all in one assistant.
             </p>
           </div>
-        </div>
-
-        <!-- <div class="topbar-actions">
-          <button class="ghost-btn" id="clearConversationBtn" type="button">
-            Clear
-          </button>
-        </div> -->
-      </div>
-    </header>
-
-    <main class="container page">
-      <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">AI-powered travel assistant for smarter trip planning</span>
-          <h2>
-            Ask one question.
-            <span class="gradient-text">Get a complete travel answer.</span>
-          </h2>
-          <p class="hero-text">
-            Get destination time, exchange rates, public holidays, country
-            facts, and structured trip guidance in one place.
-          </p>
 
           <div class="prompt-chips" aria-label="Suggested prompts">
-            <button class="chip" type="button"
-              data-prompt="I’m traveling to Japan next week. Tell me the current local time, upcoming public holidays, INR to JPY exchange rate, and a few important cultural tips.">
+            <button
+              class="chip"
+              type="button"
+              data-prompt="I’m traveling to Japan next week. Tell me the local time, upcoming public holidays, INR to JPY exchange rate, and a few useful travel facts."
+            >
               Japan essentials
             </button>
-            <button class="chip" type="button"
-              data-prompt="I’m planning a 5-day trip to Thailand on a moderate budget. Suggest a practical itinerary, key travel tips, and local currency guidance.">
+
+            <button
+              class="chip"
+              type="button"
+              data-prompt="I’m planning a 5-day trip to Thailand on a moderate budget. Suggest a practical itinerary, key travel tips, and local currency guidance."
+            >
               Thailand itinerary
             </button>
-            <button class="chip" type="button"
-              data-prompt="I’m flying to Dubai tomorrow. What time is it there, what currency should I carry, and are there any holidays or travel considerations this week?">
+
+            <button
+              class="chip"
+              type="button"
+              data-prompt="I’m flying to Dubai tomorrow. What time is it there, what currency should I carry, and are there any holidays or travel considerations this week?"
+            >
               Dubai quick check
             </button>
           </div>
-        </div>
+        </section>
 
-        <aside class="hero-side">
-          <div class="info-card glass">
-            <h3>What this assistant can do</h3>
-            <ul class="feature-list">
-              <li>Time and timezone lookup</li>
-              <li>Exchange rate guidance</li>
-              <li>Public holiday awareness</li>
-              <li>Country facts and travel context</li>
-              <li>Multi-agent orchestration behind one answer</li>
-            </ul>
-          </div>
-        </aside>
-      </section>
-
-      <section class="workspace">
-        <div class="main-panel">
-          <section class="panel composer-panel">
-            <div class="panel-header">
-              <div>
-                <h3>Ask your travel question</h3>
-                <p class="panel-subtitle">
-                  Ask naturally. The system routes the request across the right agents and tools.
-                </p>
+        <section class="chat-shell">
+          <div id="chatFeed" class="chat-feed" aria-live="polite">
+            <div class="message assistant-message intro-message">
+              <div class="message-avatar assistant-avatar">
+                <i data-lucide="sparkles"></i>
               </div>
-            </div>
 
-            <form id="askForm" class="composer-form" novalidate>
-              <label for="query" class="input-label">Travel question</label>
-
-              <div class="textarea-wrap">
-                <textarea id="query" name="query" class="textarea" rows="5" maxlength="1600"
-                  placeholder="Example: I’m traveling to Japan next week. What time is it there right now, upcoming public holidays, INR to JPY rate, and basic facts I should know?"
-                  aria-describedby="queryHelp queryError"></textarea>
-                <div class="textarea-footer">
-                  <div id="queryHelp" class="helper-text">
-                    You can ask about destination time, currency, holidays, country facts, itinerary planning, or travel
-                    tips.
-                  </div>
-                  <div id="charCount" class="char-count">0 / 1600</div>
+              <div class="message-card">
+                <div class="message-meta">Travel Concierge</div>
+                <div class="message-body markdown-body">
+                  <p>Hello! Ask me about:</p>
+                  <ul>
+                    <li>Local time and timezone</li>
+                    <li>Exchange rates</li>
+                    <li>Public holidays</li>
+                    <li>Country facts</li>
+                    <li>Trip planning guidance</li>
+                  </ul>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div id="queryError" class="field-error" aria-live="polite"></div>
+          <aside class="chat-sidebar">
+            <section class="sidebar-card">
+              <h3>Trust & Verification</h3>
+              <div class="sidebar-list">
+                <div class="sidebar-item">
+                  <i data-lucide="shield-check"></i>
+                  <span>Critical travel details should still be verified from official sources.</span>
+                </div>
+                <div class="sidebar-item">
+                  <i data-lucide="clock-3"></i>
+                  <span>Live data like time, exchange rate, and holidays may change.</span>
+                </div>
+                <div class="sidebar-item">
+                  <i data-lucide="workflow"></i>
+                  <span>The assistant routes your request through multiple workflow steps.</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="sidebar-card">
+              <h3>Capabilities</h3>
+              <div class="sidebar-list">
+                <div class="sidebar-item">
+                  <i data-lucide="globe"></i>
+                  <span>Destination context</span>
+                </div>
+                <div class="sidebar-item">
+                  <i data-lucide="banknote"></i>
+                  <span>Currency support</span>
+                </div>
+                <div class="sidebar-item">
+                  <i data-lucide="calendar-days"></i>
+                  <span>Holiday awareness</span>
+                </div>
+                <div class="sidebar-item">
+                  <i data-lucide="timer"></i>
+                  <span>Timezone lookup</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </main>
+
+      <div class="composer-dock">
+        <div class="container composer-dock-inner">
+          <form id="askForm" class="composer-form" novalidate>
+            <label for="query" class="sr-only">Travel question</label>
+
+            <div class="composer-box">
+              <textarea
+                id="query"
+                name="query"
+                class="chat-textarea"
+                rows="1"
+                maxlength="1600"
+                placeholder="Ask your travel question..."
+                aria-describedby="queryError"
+              ></textarea>
 
               <div class="composer-actions">
+                <button id="sampleBtn" class="secondary-btn" type="button">
+                  <i data-lucide="wand-sparkles"></i>
+                  Sample
+                </button>
 
                 <button id="askBtn" class="primary-btn" type="submit">
-                  <i data-lucide="send"></i>
-                  <span class="btn-text">Ask Concierge</span>
-                  <span class="btn-loader hidden" id="btnLoader"></span>
+                  <span id="askBtnContent" class="btn-inline">
+                    <i data-lucide="send"></i>
+                    Ask
+                  </span>
+                  <span id="btnLoader" class="spinner hidden" aria-hidden="true"></span>
                 </button>
-
-                <button id="sampleBtn" class="secondary-btn" type="button">
-                  <i data-lucide="sparkles"></i>
-                  Use Sample
-                </button>
-
-                <div class="topbar-actions">
-                  <button class="ghost-btn" id="clearConversationBtn" type="button">
-                    <i data-lucide="trash-2"></i>
-                    Clear
-                  </button>
-                </div>
-
-              </div>
-
-              <div id="status" class="status" aria-live="polite"></div>
-            </form>
-          </section>
-
-          <section class="panel answer-panel" aria-labelledby="answerHeading">
-            <div class="panel-header">
-              <div>
-                <h3 id="answerHeading">Final Answer</h3>
-                <p class="panel-subtitle">
-                  Structured response with summary, details, and supporting information
-                </p>
               </div>
             </div>
 
-            <div id="answerMeta" class="answer-meta hidden">
-              <span class="meta-pill" id="metaFreshness">Freshness: --</span>
-              <span class="meta-pill" id="metaLatency">Response time: --</span>
-              <span class="meta-pill" id="metaAgents">Agents used: --</span>
-            </div>
-
-            <div id="finalAnswer" class="answer-body empty-state" tabindex="-1">
-              <div class="empty-illustration">
-                <i data-lucide="plane"></i>
-              </div>
-              <h4>Your travel answer will appear here</h4>
-              <p>
-                Ask a question to get a complete travel response assembled from the right agents and tools.
-              </p>
-            </div>
-
-            <div id="answerActions" class="answer-actions hidden">
-              <button id="copyAnswerBtn" class="ghost-btn">
-                <i data-lucide="copy"></i>
-                Copy Answer
-              </button>
-            </div>
-          </section>
-
-          <section class="panel details-panel">
-            <div class="panel-header">
-              <div>
-                <h3>Execution Details</h3>
-                <p class="panel-subtitle">
-                  Helpful for transparency, debugging, and operations
-                </p>
+            <div class="composer-footer">
+              <div id="queryError" class="field-error" aria-live="polite"></div>
+              <div class="composer-footer-right">
+                <span id="status" class="status" aria-live="polite"></span>
+                <span id="charCount" class="char-count">0 / 1600</span>
               </div>
             </div>
-
-            <details class="details-box">
-              <summary>View agent and tool outputs</summary>
-              <div id="results" class="details-content muted">
-                No execution details yet.
-              </div>
-            </details>
-          </section>
-        </div>
-
-        <aside class="side-panel">
-          <section class="panel trust-panel">
-            <div class="panel-header">
-              <div>
-                <h3>Trust & Safety</h3>
-              </div>
-            </div>
-
-            <div class="trust-list">
-              <div class="trust-item">
-                <div class="trust-title">Live-data awareness</div>
-                <div class="trust-text">
-                  Time, FX, and holiday answers should display freshness where possible.
-                </div>
-              </div>
-
-              <div class="trust-item">
-                <div class="trust-title">Human verification recommended</div>
-                <div class="trust-text">
-                  Travel rules, visa policy, and official advisories should still be verified before travel.
-                </div>
-              </div>
-
-              <div class="trust-item">
-                <div class="trust-title">Protected UI rendering</div>
-                <div class="trust-text">
-                  Render model output safely. Do not inject raw, unsanitized HTML into the page.
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel sources-panel">
-            <div class="panel-header">
-              <div>
-                <h3>Sources & Freshness</h3>
-              </div>
-            </div>
-
-            <div id="sourcesBox" class="sources-box muted">
-              Source details will appear here when available.
-            </div>
-          </section>
-
-          <section class="panel architecture-panel">
-            <div class="panel-header">
-              <div>
-                <h3>Workflow Overview</h3>
-              </div>
-            </div>
-
-            <div class="architecture-steps">
-              <div class="step">
-                <span class="step-index">1</span>
-                <div>
-                  <div class="step-title">Router analyzes intent</div>
-                  <div class="step-text">
-                    The system determines which agents should run for the question.
-                  </div>
-                </div>
-              </div>
-
-              <div class="step">
-                <span class="step-index">2</span>
-                <div>
-                  <div class="step-title">Specialized agents execute</div>
-                  <div class="step-text">
-                    Time, FX, holiday, and country-information workflows run as needed.
-                  </div>
-                </div>
-              </div>
-
-              <div class="step">
-                <span class="step-index">3</span>
-                <div>
-                  <div class="step-title">Results are combined</div>
-                  <div class="step-text">
-                    The response is consolidated into one clear travel answer.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </aside>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="container footer-inner">
-        <div>
-          Travel Concierge • FastAPI • LangChain • LangGraph
-        </div>
-        <div class="footer-note">
-          For travel-critical decisions, verify official sources before departure.
+          </form>
         </div>
       </div>
-    </footer>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>
-    lucide.createIcons();
-  </script>
-  <script src="/static/app.js" defer></script>
-</body>
 
+      <script src="/static/app.js" defer></script>
+    </div>
+  </body>
 </html>

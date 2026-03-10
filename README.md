@@ -145,7 +145,7 @@ Travel-Concierge/
 ├── templates/
 │ └── index.html
 ├── static/
-│ ├── style.css
+│ ├── styles.css
 │ └── app.js
 ├── architecture.md
 ├── requirements.txt

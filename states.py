@@ -1,4 +1,4 @@
-from typing import TypedDict, Literal, List, Annotated
+from typing import TypedDict, Literal, List, Annotated, Dict, Any
 import operator
 
 class AgentInput(TypedDict):
@@ -17,5 +17,9 @@ class RouterState(TypedDict):
     routes: List[RouteItem]
     results: Annotated[List[AgentOutput], operator.add]
     final_answer: str
+    
+    user_id: str
+    user_profile: Dict[str,Any]
+    trip_context: Dict[str,Any]
 
 
