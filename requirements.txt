@@ -6,9 +6,11 @@ requests==2.32.4
 httpx==0.28.1
 pydantic==2.11.7
 pydantic-settings==2.10.1
-langchain==0.3.27
-langgraph==0.6.6
-langchain-openai==0.3.31
+langchain>=1.0.0,<2.0.0
+langchain-openai>=1.1.0,<2.0.0
+langchain-mongodb==0.11.0
+langgraph>=1.0.0,<2.0.0
+langgraph-checkpoint>=3.0.0,<5.0.0
 langgraph-checkpoint-mongodb==0.3.1
 pymongo==4.14.1
 playwright==1.55.0
