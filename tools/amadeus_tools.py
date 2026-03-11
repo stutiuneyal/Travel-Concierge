@@ -59,12 +59,36 @@ async def search_google_place_for_hotel(name: str, city: str, country: Optional[
     }
 
 async def search_flights(context: Dict[str, Any]) -> List[Dict[str, Any]]:
-    origin_code = await resolve_airport_code(context.get('origin_city'), context.get('origin_country'))
-    destination_code = await resolve_airport_code(context.get('destination_city'), context.get('destination_country'))
+    print("DEBUG search_flights context:", context)
+
+    origin_city = context.get("origin_city")
+    origin_country = context.get("origin_country")
+    destination_city = context.get("destination_city")
+    destination_country = context.get("destination_country")
+    departure_date = context.get("start_date")
+    currency = context.get("home_currency", "INR")
+
+    print("DEBUG extracted:", {
+        "origin_city": origin_city,
+        "origin_country": origin_country,
+        "destination_city": destination_city,
+        "destination_country": destination_country,
+        "departure_date": departure_date,
+    })
+    
+    origin_code = await resolve_airport_code(origin_city, origin_country)
+    destination_code = await resolve_airport_code(destination_city, destination_country)
     departure_date = context.get('start_date')
     currency = context.get('home_currency', 'INR')
+    
+    print("DEBUG resolved codes:", {
+        "origin_code": origin_code,
+        "destination_code": destination_code,
+        "departure_date": departure_date,
+    })
 
     if not origin_code or not destination_code or not departure_date:
+        print("DEBUG early return from search_flights")
         return []
 
     params = {
@@ -75,9 +99,13 @@ async def search_flights(context: Dict[str, Any]) -> List[Dict[str, Any]]:
         'currencyCode': currency,
         'max': 5,
     }
+    
+    print("DEBUG flight params:", params)
 
     data = await amadeus_client.get('/v2/shopping/flight-offers', params=params)
+    print("DEBUG raw flight response:", data)
     offers = data.get('data', [])
+    print("DEBUG offers count:", len(offers))
 
     normalized = []
     for offer in offers[:5]:

@@ -16,6 +16,7 @@ reasoner = chat().with_structured_output(FlightInsights)
 
 
 async def run_flight(state: GraphState) -> GraphState:
+    print("DEBUG run_flight called")
     flights = await search_flights(state.get('trip_context', {}))
     if not flights:
         summary = 'No flight options available yet. Origin, destination, or travel date may be missing, or the provider returned no results.'
