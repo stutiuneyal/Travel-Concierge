@@ -192,5 +192,6 @@ async def build_workflow():
     graph.add_edge('synthesize', END)
 
     client = MongoClient(settings.MONGODB_URI)
+    db = client[settings.MONGODB_DB]
     checkpointer = MongoDBSaver(client=client, db_name=settings.MONGODB_DB)
-    return graph.compile(checkpointer=checkpointer)
+    return graph.compile(checkpointer=checkpointer),db

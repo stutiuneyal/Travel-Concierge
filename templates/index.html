@@ -1,90 +1,178 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>Travel Concierge</title>
-    <meta
-      name="description"
-      content="AI travel concierge for time, currency, holidays, destination facts, and trip planning."
-    />
-    <link rel="stylesheet" href="/static/styles.css" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  </head>
 
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="container topbar-inner">
-          <div class="brand">
-            <div class="brand-badge">
-              <i data-lucide="globe-2"></i>
-            </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Travel Concierge</title>
+  <meta name="description"
+    content="AI travel concierge for time, currency, holidays, destination facts, and trip planning." />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    window.SUPABASE_URL = "{{ supabase_url }}";
+    window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+  </script>
+</head>
+
+<body>
+  <div id="authOverlay" class="auth-overlay hidden" aria-hidden="true">
+    <div class="auth-card">
+      <div class="auth-badge">Secure access</div>
+
+      <div id="emailStep">
+        <h2 class="auth-title">Welcome back</h2>
+        <p class="auth-subtitle">
+          Enter your email to receive a secure verification code and continue to your saved chats.
+        </p>
+
+        <input id="emailInput" class="auth-input" type="email" placeholder="Enter your email" autocomplete="email" />
+
+        <button id="sendOtpBtn" class="auth-primary-btn" type="button">
+          Send verification code
+        </button>
+      </div>
+
+      <div id="otpStep" class="hidden">
+        <h2 class="auth-title">Enter verification code</h2>
+        <p class="auth-subtitle">
+          We sent a 6-digit code to your email. Enter it below to continue.
+        </p>
+
+        <div class="otp-row">
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+        </div>
+
+        <button id="verifyOtpBtn" class="auth-primary-btn" type="button">
+          Verify and continue
+        </button>
+
+        <div class="auth-row">
+          <button id="changeEmailBtn" class="auth-link-btn" type="button">Change email</button>
+          <button id="resendOtpBtn" class="auth-link-btn" type="button">Resend code</button>
+        </div>
+      </div>
+
+      <div id="authMessage" class="auth-message"></div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <div class="app-bg"></div>
+
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand">
+          <button id="mobileHistoryBtn" class="ghost-btn icon-btn mobile-only" type="button" aria-label="Open chats">
+            <i data-lucide="panel-left"></i>
+          </button>
+
+          <div class="brand-badge">
+            <i data-lucide="globe-2"></i>
+          </div>
+
+          <div class="brand-copy">
+            <h1 class="brand-title">Travel Concierge</h1>
+            <p class="brand-subtitle">
+              AI travel planning with a cleaner, faster chat experience
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="ghost-btn subtle-btn" id="clearConversationBtn" type="button" title="Clear current chat">
+            <i data-lucide="trash-2"></i>
+            <span>Clear</span>
+          </button>
+          <button id="logoutBtn" type="button" class="secondary-btn subtle-btn logout-btn">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container app-layout">
+      <aside id="historyNav" class="history-nav expanded">
+        <div class="history-nav-inner">
+          <div class="history-nav-top">
+            <button id="toggleHistoryBtn" class="ghost-btn icon-btn history-toggle-btn" type="button"
+              aria-label="Toggle chat history">
+              <i data-lucide="panel-left-close"></i>
+            </button>
+
+            <button id="newChatBtn" class="primary-soft-btn new-chat-btn" type="button">
+              <i data-lucide="square-pen"></i>
+              <span class="new-chat-text">New Chat</span>
+            </button>
+          </div>
+
+          <div class="history-nav-header">
             <div>
-              <h1 class="brand-title">Travel Concierge</h1>
-              <p class="brand-subtitle">
-                Multi-agent travel assistant with FastAPI, LangChain, and LangGraph
-              </p>
+              <h3>Recent chats</h3>
+              <p>Your saved travel conversations</p>
             </div>
           </div>
 
-          <button class="ghost-btn" id="clearConversationBtn" type="button">
-            <i data-lucide="trash-2"></i>
-            Clear Chat
-          </button>
+          <div id="chatHistoryList" class="chat-history-list" aria-label="Chat history">
+            <div class="empty-history">
+              <div class="empty-history-icon">
+                <i data-lucide="message-square"></i>
+              </div>
+              <p>No chats yet</p>
+            </div>
+          </div>
         </div>
-      </header>
+      </aside>
 
-      <main class="container chat-page">
-        <section class="hero-mini">
-          <div>
+      <button id="historyBackdrop" class="history-backdrop" type="button" aria-label="Close chats"></button>
+
+      <section class="chat-main-area">
+        <section id="heroMini" class="hero-mini">
+          <div class="hero-copy">
             <span class="eyebrow">AI travel workflow</span>
-            <h2 class="hero-heading">Ask anything about your trip</h2>
+            <h2 class="hero-heading">Plan smarter, ask faster</h2>
             <p class="hero-text">
-              Timezones, holidays, exchange rates, destination facts, and travel guidance — all in one assistant.
+              Local time, holidays, currency, destination facts, practical travel guidance, and itinerary help — in one
+              place.
             </p>
           </div>
 
           <div class="prompt-chips" aria-label="Suggested prompts">
-            <button
-              class="chip"
-              type="button"
-              data-prompt="I’m traveling to Japan next week. Tell me the local time, upcoming public holidays, INR to JPY exchange rate, and a few useful travel facts."
-            >
+            <button class="chip" type="button"
+              data-prompt="I’m traveling to Japan next week. Tell me the local time, upcoming public holidays, INR to JPY exchange rate, and a few useful travel facts.">
               Japan essentials
             </button>
 
-            <button
-              class="chip"
-              type="button"
-              data-prompt="I’m planning a 5-day trip to Thailand on a moderate budget. Suggest a practical itinerary, key travel tips, and local currency guidance."
-            >
+            <button class="chip" type="button"
+              data-prompt="I’m planning a 5-day trip to Thailand on a moderate budget. Suggest a practical itinerary, key travel tips, and local currency guidance.">
               Thailand itinerary
             </button>
 
-            <button
-              class="chip"
-              type="button"
-              data-prompt="I’m flying to Dubai tomorrow. What time is it there, what currency should I carry, and are there any holidays or travel considerations this week?"
-            >
+            <button class="chip" type="button"
+              data-prompt="I’m flying to Dubai tomorrow. What time is it there, what currency should I carry, and are there any holidays or travel considerations this week?">
               Dubai quick check
             </button>
           </div>
         </section>
 
-        <section class="chat-shell">
+        <section class="chat-shell single-column">
           <div id="chatFeed" class="chat-feed" aria-live="polite">
             <div class="message assistant-message intro-message">
               <div class="message-avatar assistant-avatar">
                 <i data-lucide="sparkles"></i>
               </div>
 
-              <div class="message-card">
+              <div class="message-card intro-card">
                 <div class="message-meta">Travel Concierge</div>
                 <div class="message-body markdown-body">
                   <p>Hello! Ask me about:</p>
@@ -99,95 +187,55 @@
               </div>
             </div>
           </div>
-
-          <aside class="chat-sidebar">
-            <section class="sidebar-card">
-              <h3>Trust & Verification</h3>
-              <div class="sidebar-list">
-                <div class="sidebar-item">
-                  <i data-lucide="shield-check"></i>
-                  <span>Critical travel details should still be verified from official sources.</span>
-                </div>
-                <div class="sidebar-item">
-                  <i data-lucide="clock-3"></i>
-                  <span>Live data like time, exchange rate, and holidays may change.</span>
-                </div>
-                <div class="sidebar-item">
-                  <i data-lucide="workflow"></i>
-                  <span>The assistant routes your request through multiple workflow steps.</span>
-                </div>
-              </div>
-            </section>
-
-            <section class="sidebar-card">
-              <h3>Capabilities</h3>
-              <div class="sidebar-list">
-                <div class="sidebar-item">
-                  <i data-lucide="globe"></i>
-                  <span>Destination context</span>
-                </div>
-                <div class="sidebar-item">
-                  <i data-lucide="banknote"></i>
-                  <span>Currency support</span>
-                </div>
-                <div class="sidebar-item">
-                  <i data-lucide="calendar-days"></i>
-                  <span>Holiday awareness</span>
-                </div>
-                <div class="sidebar-item">
-                  <i data-lucide="timer"></i>
-                  <span>Timezone lookup</span>
-                </div>
-              </div>
-            </section>
-          </aside>
         </section>
-      </main>
+      </section>
+    </main>
 
-      <div class="composer-dock">
-        <div class="container composer-dock-inner">
-          <form id="askForm" class="composer-form" novalidate>
-            <label for="query" class="sr-only">Travel question</label>
+    <div class="composer-dock">
+      <div class="container composer-dock-inner">
+        <form id="askForm" class="composer-form" novalidate>
+          <label for="query" class="sr-only">Travel question</label>
 
-            <div class="composer-box">
-              <textarea
-                id="query"
-                name="query"
-                class="chat-textarea"
-                rows="1"
-                maxlength="1600"
-                placeholder="Ask your travel question..."
-                aria-describedby="queryError"
-              ></textarea>
+          <div class="composer-box">
+            <div class="composer-input-wrap">
+              <textarea id="query" name="query" class="chat-textarea" rows="1" maxlength="1600"
+                placeholder="Ask your travel question..." aria-describedby="queryError"></textarea>
+            </div>
 
-              <div class="composer-actions">
-                <button id="sampleBtn" class="secondary-btn" type="button">
-                  <i data-lucide="wand-sparkles"></i>
-                  Sample
-                </button>
+            <div class="composer-actions">
+              <button id="sampleBtn" class="ghost-btn secondary-btn" type="button">
+                <i data-lucide="wand-sparkles"></i>
+                <span>Sample</span>
+              </button>
 
-                <button id="askBtn" class="primary-btn" type="submit">
-                  <span id="askBtnContent" class="btn-inline">
-                    <i data-lucide="send"></i>
-                    Ask
+              <button id="askBtn" class="primary-btn" type="submit">
+                <span id="askBtnContent" class="btn-inline">
+                  <i data-lucide="send"></i>
+                  Ask
+                </span>
+                <span id="btnLoader" class="btn-inline hidden" aria-hidden="true">
+                  <span class="thinking-loader">
+                    <span></span><span></span><span></span>
                   </span>
-                  <span id="btnLoader" class="spinner hidden" aria-hidden="true"></span>
-                </button>
-              </div>
+                  Thinking
+                </span>
+              </button>
             </div>
+          </div>
 
-            <div class="composer-footer">
-              <div id="queryError" class="field-error" aria-live="polite"></div>
-              <div class="composer-footer-right">
-                <span id="status" class="status" aria-live="polite"></span>
-                <span id="charCount" class="char-count">0 / 1600</span>
-              </div>
+          <div class="composer-footer">
+            <div id="queryError" class="field-error" aria-live="polite"></div>
+            <div class="composer-footer-right">
+              <span id="status" class="status" aria-live="polite"></span>
+              <span id="charCount" class="char-count">0 / 1600</span>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
-
-      <script src="/static/app.js" defer></script>
     </div>
-  </body>
+
+    <script src="/static/app.js" defer></script>
+  </div>
+</body>
+
 </html>

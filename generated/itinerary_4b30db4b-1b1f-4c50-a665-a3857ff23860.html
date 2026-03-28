@@ -1,0 +1,672 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      color: #111827;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #111827;
+    }
+
+    h3 {
+      margin: 12px 0 6px 0;
+      font-size: 15px;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      page-break-inside: avoid;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f4f6;
+    }
+
+    ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+
+    p {
+      margin: 6px 0;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Trip Itinerary</h1>
+
+  <div class="card">
+    <h2>Trip Context</h2>
+    <div class="grid">
+      <div><span class="label">Origin:</span> Bangalore, India</div>
+      <div><span class="label">Destination:</span> Dubai, United Arab Emirates</div>
+      <div><span class="label">Start Date:</span> 2026-04-26</div>
+      <div><span class="label">End Date:</span> 2026-05-03</div>
+      <div><span class="label">Duration:</span> 7 days</div>
+      <div><span class="label">Budget Level:</span> -</div>
+      <div><span class="label">Currency:</span> INR</div>
+      <div><span class="label">Travelers:</span> 1</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Flights</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Carrier</th>
+          <th>Departure</th>
+          <th>Arrival</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>UL</td>
+          <td>
+            BLR
+            
+            <br><span class="muted">2026-04-26T21:20:00</span>
+            
+          </td>
+          <td>
+            DXB
+            
+            <br><span class="muted">2026-04-27T21:40:00</span>
+            
+          </td>
+          <td>INR 14346.00</td>
+        </tr>
+        
+        <tr>
+          <td>GF</td>
+          <td>
+            BLR
+            
+            <br><span class="muted">2026-04-26T05:45:00</span>
+            
+          </td>
+          <td>
+            DXB
+            
+            <br><span class="muted">2026-04-26T12:05:00</span>
+            
+          </td>
+          <td>INR 17365.00</td>
+        </tr>
+        
+        <tr>
+          <td>GF</td>
+          <td>
+            BLR
+            
+            <br><span class="muted">2026-04-26T05:45:00</span>
+            
+          </td>
+          <td>
+            DXB
+            
+            <br><span class="muted">2026-04-26T15:55:00</span>
+            
+          </td>
+          <td>INR 17365.00</td>
+        </tr>
+        
+        <tr>
+          <td>GF</td>
+          <td>
+            BLR
+            
+            <br><span class="muted">2026-04-26T22:20:00</span>
+            
+          </td>
+          <td>
+            DXB
+            
+            <br><span class="muted">2026-04-27T09:50:00</span>
+            
+          </td>
+          <td>INR 17365.00</td>
+        </tr>
+        
+        <tr>
+          <td>AI</td>
+          <td>
+            BLR
+            
+            <br><span class="muted">2026-04-26T14:15:00</span>
+            
+          </td>
+          <td>
+            DXB
+            
+            <br><span class="muted">2026-04-26T21:30:00</span>
+            
+          </td>
+          <td>INR 19464.00</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  <div class="card">
+    <h2>Flight Insights</h2>
+    
+    
+    <p><span class="label">Cheapest Option:</span> The cheapest flight option is with UL, departing from Bangalore (BLR) on April 26, 2026, at 21:20 and arriving in Dubai (DXB) on April 27, 2026, at 21:40, with one stop. The price is ₹14,346.</p>
+    
+    
+    <p><span class="label">Best Overall:</span> The best overall flight option is with GF, departing from Bangalore (BLR) on April 26, 2026, at 05:45 and arriving in Dubai (DXB) at 12:05, with one stop. This flight offers a good balance of price and travel time for ₹17,365.</p>
+    
+    
+    <p><span class="label">Traveler Advice:</span> Consider booking the UL flight for the lowest fare, but if you prefer a daytime arrival, the GF flight at 05:45 is a better choice. Ensure to check visa requirements for Dubai before traveling.</p>
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Hotels</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Rating</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>
+            JW MARRIOTT HOTEL DUBAI
+            
+            <br><span class="muted">0.29 KM from center</span>
+            
+          </td>
+          <td>57P4+8J - Business Bay - Dubai - United Arab Emirates</td>
+          <td>
+            4.6
+            
+            <span class="muted">(22068 reviews)</span>
+            
+          </td>
+          <td> -</td>
+        </tr>
+        
+        <tr>
+          <td>
+            CROWNE PLAZA DUBAI DEIRA
+            
+            <br><span class="muted">0.35 KM from center</span>
+            
+          </td>
+          <td>Salah Al Din St - Deira - Dubai - United Arab Emirates</td>
+          <td>
+            4.6
+            
+            <span class="muted">(14593 reviews)</span>
+            
+          </td>
+          <td> -</td>
+        </tr>
+        
+        <tr>
+          <td>
+            CORAL DUBAI DEIRA HOTEL
+            
+            <br><span class="muted">0.67 KM from center</span>
+            
+          </td>
+          <td>788G+CF2 - Al Muraqqabat Rd - Al Muraqqabat - Deira - Dubai - United Arab Emirates</td>
+          <td>
+            4.2
+            
+            <span class="muted">(4018 reviews)</span>
+            
+          </td>
+          <td> -</td>
+        </tr>
+        
+        <tr>
+          <td>
+            MOEVENPICK HOTEL DEIRA
+            
+            <br><span class="muted">0.69 KM from center</span>
+            
+          </td>
+          <td>Corner Cairo Road - 46th St - الممزر - ديرة - دبي - United Arab Emirates</td>
+          <td>
+            4.6
+            
+            <span class="muted">(8481 reviews)</span>
+            
+          </td>
+          <td> -</td>
+        </tr>
+        
+        <tr>
+          <td>
+            SHERATON DEIRA HOTEL DUBAI
+            
+            <br><span class="muted">0.7 KM from center</span>
+            
+          </td>
+          <td>Baniyas Rd - Riggat Al Buteen - Dubai - United Arab Emirates</td>
+          <td>
+            4.5
+            
+            <span class="muted">(4679 reviews)</span>
+            
+          </td>
+          <td> -</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  <div class="card">
+    <h2>Hotel Insights</h2>
+    
+    
+    <p><span class="label">Shortlist:</span> Here are some highly-rated hotel options in Dubai for your stay from April 26 to May 3, 2026: 1. JW Marriott Hotel Dubai (4.6 stars, 22,068 reviews) - Business Bay. 2. Crowne Plaza Dubai Deira (4.6 stars, 14,593 reviews) - Deira. 3. Coral Dubai Deira Hotel (4.2 stars, 4,018 reviews) - Al Muraqqabat. 4. Moevenpick Hotel Deira (4.6 stars, 8,481 reviews) - Deira. 5. Sheraton Deira Hotel Dubai (4.5 stars, 4,679 reviews) - Riggat Al Buteen.</p>
+    
+    
+    <p><span class="label">Best Area Advice:</span> For a vibrant experience, consider staying in Deira, which offers a mix of traditional markets and modern amenities. Alternatively, Business Bay provides a more upscale environment with proximity to attractions like the Burj Khalifa and Dubai Mall.</p>
+    
+    
+    <p><span class="label">Booking Advice:</span> Prices and availability for these hotels may vary, so it&#39;s advisable to book early to secure the best rates. Check for any special offers or packages that may be available during your travel dates.</p>
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Weather</h2>
+    
+    
+    <p><span class="label">Place:</span> Dubai</p>
+    
+    
+    <p><span class="label">Timezone:</span> Asia/Dubai</p>
+    
+
+    
+    <p><span class="label">Travel Dates Covered:</span> 2026-03-12, 2026-03-13, 2026-03-14, 2026-03-15, 2026-03-16, 2026-03-17, 2026-03-18</p>
+    
+
+    
+    <p><span class="label">Max Temperatures:</span> 26.4, 29.6, 27.7, 29.2, 31.6, 29.1, 28.0 °C</p>
+    
+
+    
+    <p><span class="label">Min Temperatures:</span> 22.2, 21.9, 20.8, 20.5, 20.9, 22.5, 23.4 °C</p>
+    
+
+    
+    <p><span class="label">Rain Probability:</span> 10, 8, 0, 0, 0, 3, 2%</p>
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Weather Insights</h2>
+    
+    
+    <p><span class="label">Summary:</span> During your trip to Dubai from April 26 to May 3, 2026, expect warm weather with maximum temperatures ranging from 26.4°C to 31.6°C and minimum temperatures between 20.5°C and 23.4°C. Rain is unlikely, with a low probability of precipitation throughout your stay.</p>
+    
+    
+    <p><span class="label">Planning Advice:</span> Plan outdoor activities like the Desert Safari and visits to Jumeirah Beach during the cooler parts of the day, such as early morning or late afternoon. Make sure to stay hydrated and take breaks in the shade or indoors during peak heat hours.</p>
+    
+    
+    <p><span class="label">Packing Advice:</span> Pack lightweight, breathable clothing suitable for warm weather. Don&#39;t forget sunscreen, sunglasses, and a hat for sun protection. A light jacket may be useful for cooler evenings. Comfortable walking shoes are recommended for exploring attractions like the Burj Khalifa and Dubai Mall.</p>
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Places</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Type</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>
+            
+            Burj Khalifa
+            
+          </td>
+          <td>1 Sheikh Mohammed bin Rashid Blvd - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.7
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            Desert safari Dubai
+            
+          </td>
+          <td>Dubai Mall - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.7
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            Dubai Aquarium &amp; Underwater Zoo
+            
+          </td>
+          <td>Dubai - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.5
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            At The Top, Burj Khalifa
+            
+          </td>
+          <td>Blvd Dubai Unit LG - 089 - burj khalifa - Sheikh Mohammed bin Rashid Blvd - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.2
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            Burj Park
+            
+          </td>
+          <td>Burj Khalifa - Burj Khalifa Blvd - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.8
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            The Museum of the Future
+            
+          </td>
+          <td>67CP+H4Q - Sheikh Zayed Rd - Trade Center Second - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.4
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            IMG Worlds of Adventure
+            
+          </td>
+          <td>Wadi Al Safa 4 - City of Arabia - Dubai - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.3
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            
+            Desert Safari Dubai | Dubai Safaris
+            
+          </td>
+          <td>48 - Sofitel hotel, Burj Gate - 5th Floor - برج خليفة - دبي - United Arab Emirates</td>
+          <td>-</td>
+          <td>
+            4.8
+            
+          </td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  <div class="card">
+    <h2>Places Insights</h2>
+    
+    
+    <p><span class="label">Must Visit Summary:</span> During your week in Dubai, don&#39;t miss the iconic Burj Khalifa, where you can enjoy breathtaking views from the observation deck. Explore the vast Dubai Mall for shopping and entertainment, and visit the Dubai Museum to learn about the city&#39;s rich history. Experience the thrill of a Desert Safari, and relax at Jumeirah Beach. If time permits, consider a day trip to Abu Dhabi to see its stunning architecture and attractions.</p>
+    
+    
+    <p><span class="label">Grouped Themes:</span> 1. **Landmarks &amp; Attractions**: Burj Khalifa, Dubai Mall, Dubai Museum, The Museum of the Future  
+2. **Outdoor Activities**: Desert Safari, Jumeirah Beach  
+3. **Shopping &amp; Entertainment**: Mall of the Emirates, IMG Worlds of Adventure  
+4. **Unique Experiences**: Dubai Aquarium &amp; Underwater Zoo, Burj Park</p>
+    
+    
+    <p><span class="label">Planning Advice:</span> Plan to visit Burj Khalifa early in your trip to secure tickets for the observation deck. Allocate a full day for the Desert Safari to enjoy all activities. For Abu Dhabi, consider a guided tour to maximize your experience. Check the timings for the Dubai Museum and The Museum of the Future, as they can vary. Make dining reservations in advance, especially at popular spots in Dubai Mall.</p>
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Budget Summary</h2>
+    
+    
+    <p><span class="label">Currency:</span> INR</p>
+    
+    
+    <p><span class="label">Flight Estimate:</span> INR 14346.0</p>
+    
+    
+    <p><span class="label">Hotel Estimate:</span> INR 21000.0</p>
+    
+    
+    <p><span class="label">Local Spend Estimate:</span> INR 17500.0</p>
+    
+    
+    <p><span class="label">Total Estimate:</span> INR 52846.0</p>
+    
+    
+    <p><span class="label">Notes:</span> Hotel and local spend are practical v1 estimates until live hotel pricing is fully integrated.</p>
+    
+
+    
+    
+    <p><span class="label">Budget Insight:</span> Your estimated budget for a 7-day trip from Bangalore to Dubai is approximately ₹52,846. This includes:
+- Flight: ₹14,346
+- Hotel: ₹21,000
+- Local spending (food, transport, activities): ₹17,500
+
+Keep in mind that hotel and local spending estimates are subject to change based on real-time pricing and personal spending habits.</p>
+    
+    
+    <p><span class="label">Savings Tips:</span> 1. **Book Flights Early**: Look for flight deals well in advance to secure the best prices.
+2. **Consider Alternative Accommodations**: Explore options like hostels or Airbnb for potentially lower rates than hotels.
+3. **Use Public Transport**: Rely on Dubai&#39;s metro and buses instead of taxis to save on transportation costs.
+4. **Eat Like a Local**: Try local eateries and street food instead of dining in touristy restaurants to save money on meals.
+5. **Plan Activities Wisely**: Look for combo tickets or discounts for attractions like the Burj Khalifa and Dubai Mall to save on entry fees.</p>
+    
+    
+    <p><span class="label">Daily Spend Guidance:</span> With a total budget of ₹52,846 for 7 days, you should aim to spend around ₹7,577 per day. This includes:
+- Accommodation: approximately ₹3,000 per day (based on hotel estimate)
+- Local spending: approximately ₹4,577 per day for food, transport, and activities. 
+
+Adjust your daily spending based on your itinerary; for example, if you plan a Desert Safari, you might want to save on other days.</p>
+    
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Itinerary</h2>
+    
+    
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 1 - Arrival in Dubai</h3>
+      <p><span class="label">Morning:</span> Arrive in Dubai at 12:05 PM. Check into your hotel and relax after your flight.</p>
+      <p><span class="label">Afternoon:</span> Take a leisurely stroll around the hotel area or visit a nearby café for lunch.</p>
+      <p><span class="label">Evening:</span> Explore the Dubai Mall and enjoy dinner at one of the restaurants with views of the Burj Khalifa.</p>
+      <p><span class="label">Notes:</span> Keep the first day light to adjust to the new time zone. If it rains, consider indoor activities at the mall.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 2 - Burj Khalifa &amp; Dubai Aquarium</h3>
+      <p><span class="label">Morning:</span> Visit Burj Khalifa early to avoid crowds. Pre-book tickets for the observation deck.</p>
+      <p><span class="label">Afternoon:</span> Explore the Dubai Aquarium &amp; Underwater Zoo located in the Dubai Mall.</p>
+      <p><span class="label">Evening:</span> Dinner at a restaurant in the Dubai Mall, followed by a visit to Burj Park for stunning views of the Burj Khalifa at night.</p>
+      <p><span class="label">Notes:</span> Check weather forecasts; if rain is expected, plan indoor activities.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 3 - Desert Safari Adventure</h3>
+      <p><span class="label">Morning:</span> Relax in the morning. Prepare for the Desert Safari.</p>
+      <p><span class="label">Afternoon:</span> Join a Desert Safari tour that includes dune bashing, camel rides, and sandboarding.</p>
+      <p><span class="label">Evening:</span> Enjoy a BBQ dinner and cultural performances at the desert camp.</p>
+      <p><span class="label">Notes:</span> Ensure to stay hydrated during the safari. Dress comfortably for outdoor activities.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 4 - Cultural Exploration</h3>
+      <p><span class="label">Morning:</span> Visit the Dubai Museum to learn about the city&#39;s history.</p>
+      <p><span class="label">Afternoon:</span> Explore the Al Fahidi Historical Neighborhood and enjoy lunch at a local café.</p>
+      <p><span class="label">Evening:</span> Visit The Museum of the Future for an interactive experience.</p>
+      <p><span class="label">Notes:</span> If rain is forecasted, consider indoor museums or cultural centers.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 5 - Day Trip to Abu Dhabi</h3>
+      <p><span class="label">Morning:</span> Take a guided tour to Abu Dhabi. Visit the Sheikh Zayed Grand Mosque.</p>
+      <p><span class="label">Afternoon:</span> Explore the Louvre Abu Dhabi and enjoy lunch nearby.</p>
+      <p><span class="label">Evening:</span> Return to Dubai and have dinner at a local restaurant.</p>
+      <p><span class="label">Notes:</span> Book the Abu Dhabi tour in advance to secure a spot.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 6 - Beach Day &amp; Shopping</h3>
+      <p><span class="label">Morning:</span> Relax at Jumeirah Beach. Enjoy the sun and sea.</p>
+      <p><span class="label">Afternoon:</span> Visit the Mall of the Emirates for shopping and indoor skiing if interested.</p>
+      <p><span class="label">Evening:</span> Dinner at a restaurant in the Mall of the Emirates.</p>
+      <p><span class="label">Notes:</span> If rain is expected, consider indoor activities at the mall.</p>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <h3>Day 7 - Departure</h3>
+      <p><span class="label">Morning:</span> Last-minute shopping or sightseeing near the hotel.</p>
+      <p><span class="label">Afternoon:</span> Check out of the hotel and head to the airport.</p>
+      <p><span class="label">Evening:</span> Flight back to Bangalore.</p>
+      <p><span class="label">Notes:</span> Ensure to leave for the airport with ample time for check-in.</p>
+    </div>
+    
+    
+    
+  </div>
+
+  <div class="card">
+    <h2>Visa Information</h2>
+    
+    
+    <ul>
+      
+      <li><span class="label">Summary:</span> Visa information for travelers from India to United Arab Emirates should be verified using official embassy, airline, and immigration sources.</li>
+      
+      <li><span class="label">Disclaimer:</span> This is informational only and should not be treated as final travel authorization advice.</li>
+      
+      <li><span class="label">Recommended Checks:</span> Verify passport validity, visa rules, transit rules, entry forms, and health requirements before travel.</li>
+      
+      <li><span class="label">Ai Summary:</span> **Visa Summary for Travelers from India to the United Arab Emirates:**  
+- **Visa Requirement:** Travelers from India must verify visa information through official embassy, immigration, and airline sources.  
+- **Important Checks:** Ensure to check the following before traveling:  
+  - Passport validity  
+  - Visa rules  
+  - Transit rules  
+  - Entry forms  
+  - Health requirements  
+
+**Disclaimer:** This information is for guidance only and should not be considered as final travel authorization advice. Always confirm with official sources.</li>
+      
+    </ul>
+    
+    
+  </div>
+</body>
+
+</html>

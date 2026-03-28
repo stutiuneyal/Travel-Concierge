@@ -16,3 +16,6 @@ pymongo==4.14.1
 playwright==1.55.0
 amadeus
 pycountry
+pyjwt
+cryptography
+python-dotenv
